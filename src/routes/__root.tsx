@@ -77,9 +77,9 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   return (
     <QueryClientProvider client={queryClient}>
-      <AppLayout>
-        <Outlet />
-      </AppLayout>
+      <AppLayout />
+      {/* Outlet rendered inside AppLayout */}
+      {false && <Outlet />}
     </QueryClientProvider>
   );
 }
