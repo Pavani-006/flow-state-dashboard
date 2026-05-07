@@ -46,8 +46,9 @@ export function Topbar() {
             <Bell className="h-4 w-4" />
           </Button>
           <Avatar className="h-8 w-8 ring-2 ring-border">
-            <AvatarFallback className="gradient-primary text-primary-foreground text-xs font-semibold">JD</AvatarFallback>
+            <AvatarFallback className="gradient-primary text-primary-foreground text-xs font-semibold">PA</AvatarFallback>
           </Avatar>
+          <span className="ml-1 hidden text-sm font-medium md:inline">Pavani</span>
         </div>
       </header>
       <CommandPalette open={open} onOpenChange={setOpen} />
