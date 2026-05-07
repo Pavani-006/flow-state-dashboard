@@ -61,7 +61,7 @@ function DashboardPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Good to see you, Jordan 👋"
+        title="Good to see you, Pavani 👋"
         subtitle="Here's a snapshot of your day. Stay focused — you've got this."
         actions={
           <>
