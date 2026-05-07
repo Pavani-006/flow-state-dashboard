@@ -78,8 +78,6 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <AppLayout />
-      {/* Outlet rendered inside AppLayout */}
-      {false && <Outlet />}
     </QueryClientProvider>
   );
 }
