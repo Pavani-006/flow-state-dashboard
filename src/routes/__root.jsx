@@ -5,10 +5,12 @@ import {
   useRouter,
   HeadContent,
   Scripts,
+  Outlet,
 } from "@tanstack/react-router";
 
 import appCss from "../styles.css?url";
 import { AppLayout } from "@/layouts/app-layout";
+import { AuthProvider, useAuth } from "@/store/auth-context";
 
 function NotFoundComponent() {
   return (
@@ -93,7 +95,31 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   return (
     <QueryClientProvider client={queryClient}>
-      <AppLayout />
+      <AuthProvider>
+        <AuthWrapper />
+      </AuthProvider>
     </QueryClientProvider>
   );
+}
+
+function AuthWrapper() {
+  const { user, isLoading } = useAuth();
+  const router = useRouter();
+
+  if (isLoading) {
+    return <div className="flex min-h-screen items-center justify-center">Loading...</div>;
+  }
+
+  // Allow access to login route
+  if (router.state.location.pathname === "/login") {
+    return <Outlet />;
+  }
+
+  // Redirect to login if not authenticated
+  if (!user) {
+    router.navigate({ to: "/login" });
+    return null;
+  }
+
+  return <AppLayout />;
 }

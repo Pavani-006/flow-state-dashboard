@@ -2,13 +2,24 @@ import { Bell, Moon, Search, Sun, Command } from "lucide-react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useApp } from "@/store/app-store";
 import { useEffect, useState } from "react";
 import { CommandPalette } from "@/components/command-palette";
+import { useAuth } from "@/store/auth-context";
+import { Link } from "@tanstack/react-router";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export function Topbar() {
   const { theme, toggleTheme } = useApp();
+  const { user, logout } = useAuth();
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -46,12 +57,45 @@ export function Topbar() {
           <Button variant="ghost" size="icon" aria-label="Notifications">
             <Bell className="h-4 w-4" />
           </Button>
-          <Avatar className="h-8 w-8 ring-2 ring-border">
-            <AvatarFallback className="gradient-primary text-primary-foreground text-xs font-semibold">
-              PA
-            </AvatarFallback>
-          </Avatar>
-          <span className="ml-1 hidden text-sm font-medium md:inline">Pavani</span>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="flex items-center gap-2 px-2 hover:bg-muted/50">
+                <Avatar className="h-8 w-8 ring-2 ring-border">
+                  <AvatarImage
+                    src={
+                      user?.customAvatar ||
+                      `https://api.dicebear.com/7.x/notionists/svg?seed=${user?.name || "Pavani"}&backgroundColor=f1f5f9`
+                    }
+                    alt={user?.name || "Profile image"}
+                  />
+                  <AvatarFallback className="gradient-primary text-primary-foreground text-xs font-semibold">
+                    {user?.name?.substring(0, 2).toUpperCase() || "PA"}
+                  </AvatarFallback>
+                </Avatar>
+                <span className="hidden text-sm font-medium md:inline">
+                  {user?.name || "Pavani"}
+                </span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem asChild>
+                <Link to="/profile" className="cursor-pointer">
+                  Profile
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link to="/settings" className="cursor-pointer">
+                  Settings
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={logout} className="text-red-500 focus:text-red-500">
+                Log out
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </header>
       <CommandPalette open={open} onOpenChange={setOpen} />

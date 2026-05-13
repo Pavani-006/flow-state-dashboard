@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useApp } from "@/store/app-store";
+import { useAuth } from "@/store/auth-context";
 import { StatCard } from "@/components/stat-card";
 import { PageHeader } from "@/components/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -67,7 +68,8 @@ function useWeeklyData() {
 }
 
 function DashboardPage() {
-  const { tasks, goals, sessions, events, toggleTask } = useApp();
+  const { tasks, goals, sessions, events, toggleTask, productivityScore } = useApp();
+  const { user } = useAuth();
   const todayKey = new Date().toISOString().slice(0, 10);
   const todaysTasks = tasks
     .filter((t) => t.dueDate?.slice(0, 10) === todayKey || t.status !== "done")
@@ -83,17 +85,14 @@ function DashboardPage() {
     .filter((e) => e.date >= todayKey)
     .sort((a, b) => a.date.localeCompare(b.date))
     .slice(0, 4);
-  const productivityScore = Math.min(
-    100,
-    Math.round(completedToday * 12 + focusToday / 2 + totalGoalProgress / 4),
-  );
+
   const quote = QUOTES[new Date().getDate() % QUOTES.length];
   const data = useWeeklyData();
 
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Good to see you, Pavani 👋"
+        title={`Good to see you, ${user?.name || "Pavani"} 👋`}
         subtitle="Here's a snapshot of your day. Stay focused — you've got this."
         actions={
           <>

@@ -15,6 +15,10 @@ const seed = () => {
   };
   return {
     theme: "light",
+    settings: {
+      dailySummary: true,
+      goalReminders: true,
+    },
     tasks: [
       {
         id: uid(),
@@ -162,9 +166,21 @@ export function AppProvider({ children }) {
 
   const update = useCallback((fn) => setState(fn), []);
 
-  const value = useMemo(
-    () => ({
+  const value = useMemo(() => {
+    // Concept: Derived State
+    // Calculate score dynamically based on state without storing it
+    const productivityScore = state.tasks.reduce((score, task) => {
+      // Concept: Conditional Update
+      // Only add points if the condition is met (+10 points for completed task)
+      if (task.status === "done") {
+        return score + 10;
+      }
+      return score;
+    }, 0);
+
+    return {
       ...state,
+      productivityScore,
       addTask: (t) =>
         update((s) => ({
           ...s,
@@ -250,9 +266,17 @@ export function AppProvider({ children }) {
       addEvent: (e) => update((s) => ({ ...s, events: [...s.events, { ...e, id: uid() }] })),
       deleteEvent: (id) => update((s) => ({ ...s, events: s.events.filter((x) => x.id !== id) })),
       toggleTheme: () => update((s) => ({ ...s, theme: s.theme === "dark" ? "light" : "dark" })),
-    }),
-    [state, update],
-  );
+      updateSettings: (patch) =>
+        update((s) => ({
+          ...s,
+          settings: { ...(s.settings || { dailySummary: true, goalReminders: true }), ...patch },
+        })),
+      resetData: () => {
+        localStorage.removeItem(STORAGE_KEY);
+        update(() => seed());
+      },
+    };
+  }, [state, update]);
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }
